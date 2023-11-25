@@ -74,7 +74,7 @@ public struct RemoteAttachment {
 
 	func ensureSchemeMatches() throws {
 		if !url.hasPrefix(scheme.rawValue) {
-			throw RemoteAttachmentError.invalidScheme("scheme must be https://")
+			throw RemoteAttachmentError.invalidScheme("scheme must be https")
 		}
 	}
 
@@ -174,11 +174,11 @@ public struct RemoteAttachmentCodec: ContentCodec {
 			throw RemoteAttachmentError.invalidScheme("no scheme parameter")
 		}
 
-		guard let scheme = RemoteAttachment.Scheme(rawValue: schemeString) else {
-			throw RemoteAttachmentError.invalidScheme("invalid scheme value. must be https://")
+        if (!schemeString.hasPrefix(RemoteAttachment.Scheme.https.rawValue)) {
+			throw RemoteAttachmentError.invalidScheme("invalid scheme value. must start with https")
 		}
 
-		var attachment = try RemoteAttachment(url: url, contentDigest: contentDigest, secret: secret, salt: salt, nonce: nonce, scheme: scheme)
+		var attachment = try RemoteAttachment(url: url, contentDigest: contentDigest, secret: secret, salt: salt, nonce: nonce, scheme: RemoteAttachment.Scheme.https)
 
 		if let contentLength = content.parameters["contentLength"] {
 			attachment.contentLength = Int(contentLength)
